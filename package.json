@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
+    "node-sass": "*",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-scripts": "1.1.4",
-    "node-sass": "*"
+    "react-scripts": "1.1.4"
   },
   "scripts": {
     "sass": "node-sass -w src/styles/sass -o src/styles/css --recursive",

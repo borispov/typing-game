@@ -1,6 +1,6 @@
 import React from "react"
 
-const score = props => {
+const Score = props => {
   return (
     <div className="stats">
       <p className="score">
@@ -10,4 +10,4 @@ const score = props => {
   )
 }
 
-export default score
+export default Score

@@ -1,6 +1,8 @@
 import React, { Component } from "react"
-import TextGen from "../components/textGen"
-import Game from "../components/game"
+import ShowText from "../components/ShowText"
+import Game from "../components/Game"
+import axios from "axios"
+import Loader from "../components/Loading"
 
 class App extends Component {
   state = {
@@ -8,72 +10,113 @@ class App extends Component {
     userInput: null,
     score: 0,
     gameOn: false,
-    getText: false
+    getText: false, // Check whether to generate new word or Not. if not - usually waiting for User inputs.
+    justStarted: false, // First Round.
+    quotesBank: [],
+    isLoading: false
+  }
+
+  async componentDidMount() {
+    // arrray for testing, to avoid POST requests overload.
+    const quotesArray = [
+      "I am from the Simpsons Show",
+      " I Love Chocolate",
+      "I am a I'm Robot Fanboy",
+      "ILoveJS"
+    ]
+    this.setState({ isLoading: true })
+    // let quotesArray = await axios.get("https://talaikis.com/api/quotes/")
+    this.setState(() => ({
+      quotesBank: quotesArray,
+      // quotesBank: quotesArray.data.map(q => q.quote),
+      isLoading: false
+    }))
   }
 
   // compare user's input text with the generated Text collection
   compareText = (user, txt) => {
-    if (user && txt) {
-      let score = 0
-      user === txt ? ++score : --score
-      console.log(score, user, txt)
-      this.setState(prevState => ({
-        score: prevState.score + score
-      }))
-    } else {
-      console.log("some object is empty")
-    }
+    console.log(user, txt, user === txt)
+    user &&
+      txt &&
+      user === txt &&
+      this.setState(prev => ({ score: prev.score + 1 }))
+    this.selectQuote()
   }
 
+  selectQuote = () => {
+    const { quotesBank } = this.state
+    const randIndex = Math.floor(Math.random() * quotesBank.length)
+    const quote = quotesBank[randIndex]
+    quotesBank.splice(randIndex, 1)
+    this.setState(() => {
+      return {
+        quotesBank,
+        generatedText: quote
+      }
+    })
+  }
+
+  // the callback function we use to Retrieve data from Child Components back to the parent.
   getDataChild = (childData, type) => {
     switch (type) {
       case "startGame":
-        this.setState(() => ({ gameOn: childData, getText: true }))
-        console.log("go!")
+        this.selectQuote()
+        this.setState(() => ({
+          gameOn: childData,
+          getText: true,
+          justStarted: true,
+          isLoading: false
+        }))
         break
+
       case "genText":
-        console.log("Hello from genText", childData)
-        this.setState(() => ({ generatedText: childData, getText: false }))
-        setTimeout(
-          this.compareText(this.state.userInput, this.state.generatedText),
-          1000
-        )
+        this.setState(() => ({
+          generatedText: childData,
+          getText: true,
+          justStarted: false
+        }))
         break
+
       case "userText":
-        console.log("userText case, your input is: ", childData)
-        this.setState(() => ({ userInput: childData, getText: true }))
-        break
-      // not sure what is this case even doing, I think nothing.
-      case "score":
-        this.setState(prevState => {
-          return { score: prevState.score + childData }
-        })
+        // -- this is the first method of comparing the Input with the generated quote
+        // -- this stores user's input in the state.
+        // this.setState(
+        //   () => ({ userInput: childData, getText: true }),
+        //   (() => {
+        //     setTimeout(() => {
+        //       this.compareText(this.state.userInput, this.state.generatedText)
+        //     }, 300)
+        //   })()
+        // )
+        // 2nd Method: Compare user input data without storing it in the state. I think it's Faster.
+        this.setState({ getText: true })
+        this.compareText(childData, this.state.generatedText)
         break
     }
   }
 
   render() {
-    console.log(this.state.generatedText)
+    // -- At first I compared inputs in the render method. doesn't seem like a good idea.
     // if (this.state.userInput)
     //   this.compareText(this.state.userInput, this.state.generatedText)
+    const isLoading = this.state.isLoading
     return (
       <div className="container">
         <h1>SpeedTyping Game</h1>
-        <h2>Welcome</h2>
+        {isLoading && <Loader />}
         {this.state.gameOn ? (
-          <TextGen
-            getText={this.state.getText}
-            dataTransfer={this.getDataChild}
+          <ShowText
+            // getText={this.state.getText}
+            // dataTransfer={this.getDataChild}
             currentText={this.state.generatedText}
           />
         ) : (
-          <div className="gameText" />
+          <div className="gameText" /> // Cheap Trick to avoid my CSS Margins fuck-ups
         )}
         <Game
           gameOn={this.state.gameOn}
           dataTransfer={this.getDataChild}
           score={this.state.score}
-          compareHandler={this.compareText}
         />
       </div>
     )

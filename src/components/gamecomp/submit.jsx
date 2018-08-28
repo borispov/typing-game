@@ -1,6 +1,6 @@
 import React from "react"
 
-const submit = props => {
+const Submit = props => {
   return (
     <div>
       <input type="submit" className="userInput__submit" />
@@ -8,4 +8,4 @@ const submit = props => {
   )
 }
 
-export default submit
+export default Submit
