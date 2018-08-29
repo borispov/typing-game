@@ -4,6 +4,7 @@ import ErrorMsg from "./ErrorMsg"
 
 class InputBar extends Component {
   state = {
+    numOfKeysPressed: 0,
     isInputEmpty: null,
     // The message to pass down to errorMsg component, if the input is empty.
     theMsg: " It's Empty. Type Anything, Yo!"
@@ -30,6 +31,7 @@ class InputBar extends Component {
   render() {
     return (
       <Fragment>
+        <p>{this.state.numOfKeysPressed}</p>
         <If
           condition={this.state.isInputEmpty}
           then={<ErrorMsg msg={this.state.theMsg} />}
@@ -44,10 +46,16 @@ class InputBar extends Component {
               : this.props.inputStatus.pregame
           }
           className="userInput__input"
-          onKeyUp={e =>
-            (e.key === "Enter" && this.handleInput(e)) ||
-            (e.key === "Escape" && this.alert("Esc Pressed"))
-          }
+          onKeyUp={e => {
+            this.props.gameOn
+              ? e.key &&
+                this.setState(prev => ({
+                  numOfKeysPressed: prev.numOfKeysPressed + 1
+                }))
+              : null,
+              (e.key === "Enter" && this.handleInput(e)) ||
+                (e.key === "Escape" && this.alert("Esc Pressed"))
+          }}
         />
       </Fragment>
     )
