@@ -1,6 +1,6 @@
-import React, { Fragment, Component } from "react"
-import If from "./If.js"
-import ErrorMsg from "./ErrorMsg"
+import React, { Fragment, Component } from 'react'
+import If from './If.js'
+import ErrorMsg from './ErrorMsg'
 
 class InputBar extends Component {
   state = {
@@ -10,15 +10,28 @@ class InputBar extends Component {
     theMsg: " It's Empty. Type Anything, Yo!"
   }
 
+  // regE = new RegExp('^[a-zA-Z0-9,.!? ]*$')
+  isValidKey = n => {
+    console.log(n)
+    return (
+      (n >= 65 && n <= 90) ||
+      (n >= 97 && n <= 122) ||
+      n === 190 ||
+      n === 32 ||
+      n === 188 ||
+      n === 191 ||
+      (n >= 44 && n <= 57)
+    )
+  }
   // Method to reset the input value once submitted
   resetForm = () => {
-    this.inputEl.value = ""
+    this.inputEl.value = ''
   }
 
   handleInput = e => {
     // if the game has started, and user passes Blank Input, warn him.
     // Set the state 'isInputEmpty' to true, and render ErrorMsg.
-    if (e.target.value === "" && this.props.gameOn) {
+    if (e.target.value === '' && this.props.gameOn) {
       // let inputState = this.state.isInputEmpty
       this.setState({ isInputEmpty: true })
       return false
@@ -48,13 +61,13 @@ class InputBar extends Component {
           className="userInput__input"
           onKeyUp={e => {
             this.props.gameOn
-              ? e.key &&
+              ? this.isValidKey(e.which) &&
                 this.setState(prev => ({
                   numOfKeysPressed: prev.numOfKeysPressed + 1
                 }))
               : null,
-              (e.key === "Enter" && this.handleInput(e)) ||
-                (e.key === "Escape" && this.alert("Esc Pressed"))
+              (e.key === 'Enter' && this.handleInput(e)) ||
+                (e.key === 'Escape' && this.alert('Esc Pressed'))
           }}
         />
       </Fragment>

@@ -7,11 +7,8 @@ import Loader from "../components/Loading"
 class App extends Component {
   state = {
     generatedText: null,
-    userInput: null,
     score: 0,
     gameOn: false,
-    getText: false, // Check whether to generate new word or Not. if not - usually waiting for User inputs.
-    justStarted: false, // First Round.
     quotesBank: [],
     isLoading: false
   }
@@ -63,53 +60,31 @@ class App extends Component {
         this.selectQuote()
         this.setState(() => ({
           gameOn: childData,
-          getText: true,
-          justStarted: true,
           isLoading: false
         }))
         break
 
       case "genText":
         this.setState(() => ({
-          generatedText: childData,
-          getText: true,
-          justStarted: false
+          generatedText: childData
         }))
         break
 
       case "userText":
-        // -- this is the first method of comparing the Input with the generated quote
-        // -- this stores user's input in the state.
-        // this.setState(
-        //   () => ({ userInput: childData, getText: true }),
-        //   (() => {
-        //     setTimeout(() => {
-        //       this.compareText(this.state.userInput, this.state.generatedText)
-        //     }, 300)
-        //   })()
-        // )
         // 2nd Method: Compare user input data without storing it in the state. I think it's Faster.
-        this.setState({ getText: true })
         this.compareText(childData, this.state.generatedText)
         break
     }
   }
 
   render() {
-    // -- At first I compared inputs in the render method. doesn't seem like a good idea.
-    // if (this.state.userInput)
-    //   this.compareText(this.state.userInput, this.state.generatedText)
     const isLoading = this.state.isLoading
     return (
       <div className="container">
         <h1>SpeedTyping Game</h1>
         {isLoading && <Loader />}
         {this.state.gameOn ? (
-          <ShowText
-            // getText={this.state.getText}
-            // dataTransfer={this.getDataChild}
-            currentText={this.state.generatedText}
-          />
+          <ShowText currentText={this.state.generatedText} />
         ) : (
           <div className="gameText" /> // Cheap Trick to avoid my CSS Margins fuck-ups
         )}
