@@ -1,14 +1,20 @@
-import React, { Component } from "react"
-import ShowText from "../components/ShowText"
-import Game from "../components/Game"
-import axios from "axios"
-import Loader from "../components/Loading"
+import React, { Component } from 'react'
+import ShowText from '../components/ShowText'
+import Game from '../components/Game'
+import axios from 'axios'
+import Loader from '../components/Loading'
 
 class App extends Component {
   state = {
-    generatedText: null,
-    score: 0,
     gameOn: false,
+    generatedText: null,
+    time: 0,
+    score: {
+      correctWords: 0,
+      cpm: 0,
+      grossWPM: 0
+    },
+    numOfClicks: null,
     quotesBank: [],
     isLoading: false
   }
@@ -16,10 +22,10 @@ class App extends Component {
   async componentDidMount() {
     // arrray for testing, to avoid POST requests overload.
     const quotesArray = [
-      "I am from the Simpsons Show",
-      " I Love Chocolate",
+      'I am from the Simpsons Show',
+      ' I Love Chocolate',
       "I am a I'm Robot Fanboy",
-      "ILoveJS"
+      'ILoveJS'
     ]
     this.setState({ isLoading: true })
     // let quotesArray = await axios.get("https://talaikis.com/api/quotes/")
@@ -36,10 +42,32 @@ class App extends Component {
     user &&
       txt &&
       user === txt &&
-      this.setState(prev => ({ score: prev.score + 1 }))
+      this.setState(prev => ({ ...prev, score: prev.score + 1 }))
     this.selectQuote()
   }
 
+  calc_CPM = (clicks = this.state.numOfClicks, seconds = this.state.time) => {
+    // simple CPM and grossWPM Formula. not sure how to implement the Net WPM Formula.
+    // let {cpm, grossWPM } = {...this.state.score}
+    const cpm = clicks / (seconds / 60)
+    const grossWPM = clicks / 5 / (seconds / 60)
+    this.setState(prevState => ({
+      ...prevState,
+      score: {
+        cpm: cpm,
+        grossWPM: grossWPM
+      },
+      isLoading: false
+    }))
+  }
+
+  // Method passed to Child Components to get SCORES pass back to Parent.
+  retrieveScore = (data, type) => {
+    type === 'score' && this.setState({ score: data })
+    type === 'time' && this.setState({ time: data })
+  }
+
+  // Method to select random quote from the Quotes Array and Splice that item.
   selectQuote = () => {
     const { quotesBank } = this.state
     const randIndex = Math.floor(Math.random() * quotesBank.length)
@@ -55,25 +83,23 @@ class App extends Component {
 
   // the callback function we use to Retrieve data from Child Components back to the parent.
   getDataChild = (childData, type) => {
-    switch (type) {
-      case "startGame":
-        this.selectQuote()
-        this.setState(() => ({
-          gameOn: childData,
-          isLoading: false
-        }))
-        break
-
-      case "genText":
-        this.setState(() => ({
-          generatedText: childData
-        }))
-        break
-
-      case "userText":
-        // 2nd Method: Compare user input data without storing it in the state. I think it's Faster.
-        this.compareText(childData, this.state.generatedText)
-        break
+    type === 'startGame' &&
+      (this.selectQuote(),
+      this.setState({
+        gameOn: childData,
+        isLoading: false
+      }))
+    type === 'userText' && this.compareText(childData, this.state.generatedText)
+    type === 'genText' && this.setState({ generatedText: childData })
+    if (type === 'time') {
+      this.setState({
+        gameOn: false,
+        numOfClicks: childData,
+        isLoading: true
+      })
+      setTimeout(() => {
+        this.calc_CPM()
+      }, 1500)
     }
   }
 
@@ -86,12 +112,13 @@ class App extends Component {
         {this.state.gameOn ? (
           <ShowText currentText={this.state.generatedText} />
         ) : (
-          <div className="gameText" /> // Cheap Trick to avoid my CSS Margins fuck-ups
+          <div className="gameText" />
         )}
         <Game
+          passTimeScore={this.retrieveScore}
           gameOn={this.state.gameOn}
           dataTransfer={this.getDataChild}
-          score={this.state.score}
+          // score={this.state.score}
         />
       </div>
     )
