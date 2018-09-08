@@ -301,7 +301,7 @@ h1 {
   position: absolute;
   top: 200px;
   left: 60px;
-  max-width: 350px;
+  max-width: 270px;
   text-align: left; }
   .social__title {
     margin: 0;
@@ -311,3 +311,14 @@ h1 {
   .social__about {
     font-weight: normal;
     font-family: 'Nobile', Helvetica, Arial, sans-serif; }
+  .social__list {
+    display: flex;
+    flex-flow: row wrap;
+    list-style: none;
+    margin-top: 20px;
+    padding: 0;
+    justify-content: space-between;
+    max-width: 150px; }
+  .social__item {
+    color: #264653;
+    font-size: 1.5em; }
