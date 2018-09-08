@@ -49,7 +49,6 @@ class InputBar extends Component {
     }
   }
   render() {
-    // !this.props.gameOn ? this.passNumOfKeys() : null
     return (
       <Fragment>
         {/* <If

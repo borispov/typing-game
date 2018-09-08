@@ -31,23 +31,25 @@ class App extends Component {
       grossWPM: null
     },
     numOfClicks: null,
+    numOfErrors: null,
     quotesBank: [],
-    isLoading: false
+    isLoading: false,
+    userInput: null
   }
 
   async componentDidMount() {
     // arrray for testing, to avoid POST requests overload.
-    const quotesArray = [
-      'I am from the Simpsons Show',
-      ' I Love Chocolate',
-      "I am a I'm Robot Fanboy",
-      'ILoveJS'
-    ]
+    // const quotesArray = [
+    //   'I am from the Simpsons Show',
+    //   ' I Love Chocolate',
+    //   "I am a I'm Robot Fanboy",
+    //   'ILoveJS'
+    // ]
     this.setState({ isLoading: true })
-    // let quotesArray = await axios.get("https://talaikis.com/api/quotes/")
+    let quotesArray = await axios.get('https://talaikis.com/api/quotes/')
     this.setState(() => ({
-      quotesBank: quotesArray,
-      // quotesBank: quotesArray.data.map(q => q.quote),
+      // quotesBank: quotesArray,
+      quotesBank: quotesArray.data.map(q => q.quote),
       isLoading: false
     }))
   }
