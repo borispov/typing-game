@@ -1,7 +1,6 @@
 import React from 'react'
-import Score from './gamecomp/Score'
 import InputBar from './gamecomp/InputBar'
-import ClockScore from './ClockScore'
+import ClockScore from './gamecomp/ClockScore'
 
 const Game = props => {
   const inputStatus = {
@@ -35,7 +34,6 @@ const Game = props => {
         passData={passData}
       />
       {props.gameOn && <ClockScore passTime={handleTime} />}
-      <Score score={props.score} />
     </div>
   )
 }

@@ -1,13 +1,18 @@
 import React, { Fragment, Component } from 'react'
 import If from './If.js'
-import ErrorMsg from './ErrorMsg'
+// import ErrorMsg from './ErrorMsg'
 
 class InputBar extends Component {
   state = {
     numOfKeysPressed: 0,
     isInputEmpty: null,
     // The message to pass down to errorMsg component, if the input is empty.
-    theMsg: " It's Empty. Type Anything, Yo!"
+    theMsg: " It's Empty. Type Anything, Yo!",
+    inputStatus: {
+      err: " It's Empty. Type Anything, Yo!",
+      started: 'Match The Text Above ASAP!',
+      pregame: 'Press Enter To Start'
+    }
   }
 
   isValidKey = n => {
@@ -47,21 +52,28 @@ class InputBar extends Component {
     // !this.props.gameOn ? this.passNumOfKeys() : null
     return (
       <Fragment>
-        <p>{this.state.numOfKeysPressed}</p>
-        <If
+        {/* <If
           condition={this.state.isInputEmpty}
           then={<ErrorMsg msg={this.state.theMsg} />}
           else={null}
-        />
+        /> */}
         <input
           ref={el => (this.inputEl = el)}
+          autoFocus={true}
           type="text"
           placeholder={
             this.props.gameOn
-              ? this.props.inputStatus.started
+              ? this.state.isInputEmpty
+                ? this.state.inputStatus.err
+                : this.props.inputStatus.started
               : this.props.inputStatus.pregame
           }
-          className="userInput__input"
+          className={
+            (this.props.gameOn &&
+              this.state.isInputEmpty &&
+              'userinput__input -error') ||
+            'userinput__input'
+          }
           onKeyUp={e => {
             if (this.props.gameOn) {
               this.isValidKey(e.which)

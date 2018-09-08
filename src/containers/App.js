@@ -1,18 +1,34 @@
-import React, { Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import ShowText from '../components/ShowText'
 import Game from '../components/Game'
 import axios from 'axios'
-import Loader from '../components/Loading'
+import Loader from '../components/UI/Loading'
+import DisplayName from '../components/DisplayName'
+import Score from '../components/Score'
+import Instructions from '../components/UI/Instructions'
+import Rules from '../components/UI/Rules'
+import Social from '../components/UI/Social'
+
+/*            
+Next Features Should Be: 
+Scoreboard with: Display Name CPM and WPM  --- hardcoded for now.
+Add CSS.. Animations.. Colors.. stuffZ
+*/
+
+/*
+Implementing a username: 
+*/
 
 class App extends Component {
   state = {
+    userName: null,
     gameOn: false,
     generatedText: null,
     time: 0,
     score: {
       correctWords: 0,
-      cpm: 0,
-      grossWPM: 0
+      cpm: null,
+      grossWPM: null
     },
     numOfClicks: null,
     quotesBank: [],
@@ -46,9 +62,9 @@ class App extends Component {
     this.selectQuote()
   }
 
-  calc_CPM = (clicks = this.state.numOfClicks, seconds = this.state.time) => {
-    // simple CPM and grossWPM Formula. not sure how to implement the Net WPM Formula.
-    // let {cpm, grossWPM } = {...this.state.score}
+  calc_CPM = () => {
+    const clicks = this.state.numOfClicks
+    const seconds = this.state.time
     const cpm = clicks / (seconds / 60)
     const grossWPM = clicks / 5 / (seconds / 60)
     this.setState(prevState => ({
@@ -63,7 +79,7 @@ class App extends Component {
 
   // Method passed to Child Components to get SCORES pass back to Parent.
   retrieveScore = (data, type) => {
-    type === 'score' && this.setState({ score: data })
+    // type === 'score' && this.setState({ score: data })
     type === 'time' && this.setState({ time: data })
   }
 
@@ -87,7 +103,8 @@ class App extends Component {
       (this.selectQuote(),
       this.setState({
         gameOn: childData,
-        isLoading: false
+        isLoading: false,
+        numOfClicks: 0
       }))
     type === 'userText' && this.compareText(childData, this.state.generatedText)
     type === 'genText' && this.setState({ generatedText: childData })
@@ -101,24 +118,43 @@ class App extends Component {
         this.calc_CPM()
       }, 1500)
     }
+    type === 'userName' && this.setState({ userName: childData })
   }
 
   render() {
     const isLoading = this.state.isLoading
     return (
       <div className="container">
+        <Instructions />
+        <Rules />
+        <Social />
         <h1>SpeedTyping Game</h1>
-        {isLoading && <Loader />}
-        {this.state.gameOn ? (
-          <ShowText currentText={this.state.generatedText} />
+        {!this.state.userName ? (
+          <DisplayName passUserName={this.getDataChild} />
         ) : (
-          <div className="gameText" />
+          <Fragment>
+            {
+              <h3 className="welcome">
+                Hello {this.state.userName}! Welcome aboard
+              </h3>
+            }
+            {isLoading && <Loader />}
+            {this.state.gameOn ? (
+              <ShowText currentText={this.state.generatedText} />
+            ) : (
+              <div className="gameText" />
+            )}
+            <Game
+              passTimeScore={this.retrieveScore}
+              gameOn={this.state.gameOn}
+              dataTransfer={this.getDataChild}
+            />
+          </Fragment>
         )}
-        <Game
-          passTimeScore={this.retrieveScore}
+        <Score
+          score={this.state.score}
+          name={this.state.userName}
           gameOn={this.state.gameOn}
-          dataTransfer={this.getDataChild}
-          // score={this.state.score}
         />
       </div>
     )
