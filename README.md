@@ -2,6 +2,13 @@
 
 Hello and welcome to my first typing game which is also build with React as part of my React studying.
 
+## currently in development and is not deployed
+
+## to run the project: 
+- Clone the repository
+- run npm install from the directory 
+- run npm start to launch the project on localhost:3000 
+
 ## This app currently build using :
 
 1. **React.js** - Without Redux. not sure if ever will use Redux in the project.
