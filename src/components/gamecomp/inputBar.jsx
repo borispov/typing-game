@@ -1,17 +1,26 @@
 import React, { Fragment, Component } from 'react'
-import If from './If.js'
-// import ErrorMsg from './ErrorMsg'
+import Clockscore from './ClockScore'
 
 class InputBar extends Component {
   state = {
     numOfKeysPressed: 0,
     isInputEmpty: null,
-    // The message to pass down to errorMsg component, if the input is empty.
-    theMsg: " It's Empty. Type Anything, Yo!",
     inputStatus: {
       err: " It's Empty. Type Anything, Yo!",
       started: 'Match The Text Above ASAP!',
       pregame: 'Press Enter To Start'
+    },
+    time: null
+  }
+
+  handleTime = (data, type) => {
+    if (data === 30) {
+      const userInput = this.inputEl.value
+      this.props.passData(userInput, 'evaluate')
+      this.props.passTime(data, type)
+      this.passNumOfKeys()
+    } else {
+      this.setState({ time: data })
     }
   }
 
@@ -26,6 +35,7 @@ class InputBar extends Component {
       (n >= 44 && n <= 57)
     )
   }
+
   // Method to reset the input value once submitted
   resetForm = () => {
     this.inputEl.value = ''
@@ -35,6 +45,20 @@ class InputBar extends Component {
     let n = this.state.numOfKeysPressed
     // console.log(n)
     this.props.passData(n)
+    this.setState({ numOfKeysPressed: 0 })
+  }
+
+  handleEscape = e => {
+    this.props.passData(e.target.value, 'evaluate')
+    this.passNumOfKeys()
+    const time = this.state.time
+    console.log(time)
+    this.props.passTime(time, 'time')
+  }
+
+  handleSpace = e => {
+    console.log('space clicked')
+    this.props.passData(e.target.value, 'evaluate')
   }
 
   // handle Error of Blank input. else pass data.
@@ -48,14 +72,10 @@ class InputBar extends Component {
       this.resetForm()
     }
   }
+
   render() {
     return (
       <Fragment>
-        {/* <If
-          condition={this.state.isInputEmpty}
-          then={<ErrorMsg msg={this.state.theMsg} />}
-          else={null}
-        /> */}
         <input
           ref={el => (this.inputEl = el)}
           autoFocus={true}
@@ -82,9 +102,13 @@ class InputBar extends Component {
                 : null
             }
             ;(e.key === 'Enter' && this.handleInput(e)) ||
-              (e.key === 'Escape' && this.passNumOfKeys())
+              (e.which === 32 &&
+                e.target.value.charCodeAt(e.target.value.length - 2) !== 32 &&
+                this.handleSpace(e)) ||
+              (e.key === 'Escape' && this.handleEscape(e))
           }}
         />
+        {this.props.gameOn && <Clockscore passTime={this.handleTime} />}
       </Fragment>
     )
   }

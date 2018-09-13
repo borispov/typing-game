@@ -1,6 +1,5 @@
 import React from 'react'
 import InputBar from './gamecomp/InputBar'
-import ClockScore from './gamecomp/ClockScore'
 
 const Game = props => {
   const inputStatus = {
@@ -9,13 +8,14 @@ const Game = props => {
   }
 
   const handleTime = (data, type) => {
-    if (data === 60) props.dataTransfer(data, type)
     props.passTimeScore(data, type)
   }
 
-  const passData = e => {
-    console.log(typeof e)
-    if (typeof e === 'number') {
+  const passData = (e, purpose) => {
+    if (purpose === 'evaluate') {
+      console.log(purpose)
+      props.gameOn && props.dataTransfer(e, 'evaluate')
+    } else if (typeof e === 'number') {
       props.dataTransfer(e, 'time')
     } else {
       const userText = e.target.value.toString()
@@ -32,8 +32,8 @@ const Game = props => {
         gameOn={props.gameOn}
         inputStatus={inputStatus}
         passData={passData}
+        passTime={handleTime}
       />
-      {props.gameOn && <ClockScore passTime={handleTime} />}
     </div>
   )
 }

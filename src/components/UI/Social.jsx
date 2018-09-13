@@ -5,9 +5,9 @@ export default () => {
     <div className="social">
       <h3 className="social__title">Created By:</h3>
       <h3 className="social__title">Boris Povolotsky</h3>
-      <p className="social__about">
+      {/* <p className="social__about">
         I'm a junior web developer, located in Israel. Currently studying as
-        much as I can absorb and looking for a job.
+        much as I can absorb and looking for a job. */}
         <ul className="social__list">
           <li>
             <a href="http://facebook.com/povolotsky">
@@ -25,7 +25,7 @@ export default () => {
             </a>
           </li>
         </ul>
-      </p>
+      {/* </p> */}
     </div>
   )
 }

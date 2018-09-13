@@ -24,6 +24,7 @@ class App extends Component {
     userName: null,
     gameOn: false,
     generatedText: null,
+    prevText: null,
     time: 0,
     score: {
       correctWords: 0,
@@ -34,16 +35,23 @@ class App extends Component {
     numOfErrors: null,
     quotesBank: [],
     isLoading: false,
-    userInput: null
+    totErrors: null
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    const nextText = nextState.generatedText
+    const current = this.state.generatedText
+    if (current && current !== nextText) {
+      this.setState({ prevText: current })
+    }
+  }
   async componentDidMount() {
     // arrray for testing, to avoid POST requests overload.
     // const quotesArray = [
-    //   'I am from the Simpsons Show',
-    //   ' I Love Chocolate',
-    //   "I am a I'm Robot Fanboy",
-    //   'ILoveJS'
+    //   'Hello world! I am from the Simpsons Show',
+    //   'Chocolate is one of the greatest wonders accross all worlds, galaxies and kingdoms. even ants would probably like chocolate if they could knew about it.',
+    //   "The most abnoxious notion about JavaScript is the idea that it's a programming language that is capable of turnign dinozarous into modern lizards",
+    //   'I love learning, practicing and thinking JavaScript. I love JavaScript. My precious Java . Script.'
     // ]
     this.setState({ isLoading: true })
     let quotesArray = await axios.get('https://talaikis.com/api/quotes/')
@@ -54,34 +62,54 @@ class App extends Component {
     }))
   }
 
-  // compare user's input text with the generated Text collection
-  compareText = (user, txt) => {
-    console.log(user, txt, user === txt)
-    user &&
-      txt &&
-      user === txt &&
-      this.setState(prev => ({ ...prev, score: prev.score + 1 }))
+  evaluate = async (usr, txt) => {
+    const userArray = usr.split(' ').slice(0, -1)
+    const txtArray = txt.split(' ')
+    const errors = userArray.reduce((errors, currentWord, index) => {
+      return currentWord !== txtArray[index] ? errors + 1 : errors
+    }, 0)
+    console.log(errors)
+    await this.setState(prev => ({ numOfErrors: errors }))
+    console.log(this.state.numOfErrors)
+  }
+
+  // get New piece of text -- add the sum of errors from last text to the total errors state.
+  // it's triggered via callback that is passed way down to InputBar Component - by 'Enter'
+  newText = () => {
+    if (this.state.prevText !== this.state.generatedText) {
+      this.setState(prev => ({
+        totErrors: prev.totErrors + this.state.numOfErrors
+      }))
+    }
     this.selectQuote()
   }
 
-  calc_CPM = () => {
-    const clicks = this.state.numOfClicks
-    const seconds = this.state.time
-    const cpm = clicks / (seconds / 60)
-    const grossWPM = clicks / 5 / (seconds / 60)
+  calc_CPM = async () => {
+    await this.setState(prev => ({
+      totErrors: prev.totErrors + this.state.numOfErrors
+    }))
+    const { numOfClicks, time, totErrors } = this.state
+    const errorRate = totErrors / (time / 60)
+    const cpm = numOfClicks / (time / 60)
+    const grossWPM = numOfClicks / 5 / (time / 60)
+    const netWPM = grossWPM - errorRate
+    console.log(netWPM)
+    console.log(this.state.totErrors)
     this.setState(prevState => ({
       ...prevState,
       score: {
         cpm: cpm,
-        grossWPM: grossWPM
+        grossWPM: grossWPM,
+        netWPM: netWPM
       },
+      numOfErrors: 0,
+      totErrors: 0,
       isLoading: false
     }))
   }
 
   // Method passed to Child Components to get SCORES pass back to Parent.
   retrieveScore = (data, type) => {
-    // type === 'score' && this.setState({ score: data })
     type === 'time' && this.setState({ time: data })
   }
 
@@ -108,7 +136,8 @@ class App extends Component {
         isLoading: false,
         numOfClicks: 0
       }))
-    type === 'userText' && this.compareText(childData, this.state.generatedText)
+    type === 'evaluate' && this.evaluate(childData, this.state.generatedText)
+    type === 'userText' && this.newText(childData, this.state.generatedText)
     type === 'genText' && this.setState({ generatedText: childData })
     if (type === 'time') {
       this.setState({
