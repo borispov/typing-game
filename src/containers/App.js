@@ -11,15 +11,13 @@ import Social from '../components/UI/Social'
 
 /*            
 Next Features Should Be: 
-Scoreboard with: Display Name CPM and WPM  --- hardcoded for now.
-Add CSS.. Animations.. Colors.. stuffZ
-*/
-
-/*
-Implementing a username: 
+CSS: Transitions/Animations, Responsive Web Design 
+Backend: Implement MongoDB database, probably with Express Server. 
 */
 
 class App extends Component {
+  // I think that's a lot of state and probably can shrink it down.
+  //
   state = {
     userName: null,
     gameOn: false,
@@ -27,50 +25,24 @@ class App extends Component {
     prevText: null,
     time: 0,
     score: {
-      correctWords: 0,
-      cpm: null,
-      grossWPM: null
+      cpm: null, // characters per minute
+      grossWPM: null, // Words Per Minute without error count
+      netWPM: null // Words Per Minute considering errors.
     },
     numOfClicks: null,
-    numOfErrors: null,
+    numOfErrors: null, // num of errors in the current piece of text ( quote ) ~ gets cleared once the quote changes.
+    totErrors: null,
     quotesBank: [],
-    isLoading: false,
-    totErrors: null
+    isLoading: false
   }
 
+  // If the quote is changed, store the previous quote in state,
   componentWillUpdate(nextProps, nextState) {
     const nextText = nextState.generatedText
     const current = this.state.generatedText
     if (current && current !== nextText) {
       this.setState({ prevText: current })
     }
-  }
-  async componentDidMount() {
-    // arrray for testing, to avoid POST requests overload.
-    // const quotesArray = [
-    //   'Hello world! I am from the Simpsons Show',
-    //   'Chocolate is one of the greatest wonders accross all worlds, galaxies and kingdoms. even ants would probably like chocolate if they could knew about it.',
-    //   "The most abnoxious notion about JavaScript is the idea that it's a programming language that is capable of turnign dinozarous into modern lizards",
-    //   'I love learning, practicing and thinking JavaScript. I love JavaScript. My precious Java . Script.'
-    // ]
-    this.setState({ isLoading: true })
-    let quotesArray = await axios.get('https://talaikis.com/api/quotes/')
-    this.setState(() => ({
-      // quotesBank: quotesArray,
-      quotesBank: quotesArray.data.map(q => q.quote),
-      isLoading: false
-    }))
-  }
-
-  evaluate = async (usr, txt) => {
-    const userArray = usr.split(' ').slice(0, -1)
-    const txtArray = txt.split(' ')
-    const errors = userArray.reduce((errors, currentWord, index) => {
-      return currentWord !== txtArray[index] ? errors + 1 : errors
-    }, 0)
-    console.log(errors)
-    await this.setState(prev => ({ numOfErrors: errors }))
-    console.log(this.state.numOfErrors)
   }
 
   // get New piece of text -- add the sum of errors from last text to the total errors state.
@@ -84,6 +56,29 @@ class App extends Component {
     this.selectQuote()
   }
 
+  // fetch data from quote API ~ async func to wait for the data to arrive and set it to state.
+  async componentDidMount() {
+    this.setState({ isLoading: true })
+    let quotesArray = await axios.get('https://talaikis.com/api/quotes/')
+    this.setState(() => ({
+      quotesBank: quotesArray.data.map(q => q.quote),
+      isLoading: false
+    }))
+  }
+
+  // function to calculate errors. async / await is basically for testing.
+  evaluate = async (usr, txt) => {
+    const userArray = usr.split(' ').slice(0, -1)
+    const txtArray = txt.split(' ')
+    const errors = userArray.reduce((errors, currentWord, index) => {
+      return currentWord !== txtArray[index] ? errors + 1 : errors
+    }, 0)
+    await this.setState(prev => ({ numOfErrors: errors }))
+  }
+
+  // calc_CPM - first set all the errors in the totErrors state.
+  // Then - calculate the CPM and netWPM and set the score in the state
+  // clear the errors - so the next'round' starts off with clear Errors state.
   calc_CPM = async () => {
     await this.setState(prev => ({
       totErrors: prev.totErrors + this.state.numOfErrors
