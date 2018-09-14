@@ -4,10 +4,11 @@ Hello and welcome to my first typing game which is also build with React as part
 
 ## currently in development and is not deployed
 
-## to run the project: 
+## to run the project:
+
 - Clone the repository
-- run npm install from the directory 
-- run npm start to launch the project on localhost:3000 
+- run npm install from the directory
+- run npm start to launch the project on localhost:3000
 
 ## This app currently build using :
 

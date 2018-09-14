@@ -151,10 +151,7 @@ class App extends Component {
     const isLoading = this.state.isLoading
     return (
       <div className="container">
-        <Instructions />
-        <Rules />
-        <Social />
-        <h1>SpeedTyping Game</h1>
+        <h1 className="title">SpeedTyping Game</h1>
         {!this.state.userName ? (
           <DisplayName passUserName={this.getDataChild} />
         ) : (
@@ -177,11 +174,15 @@ class App extends Component {
             />
           </Fragment>
         )}
+        <Instructions />
+        <Rules />
+
         <Score
           score={this.state.score}
           name={this.state.userName}
           gameOn={this.state.gameOn}
         />
+        <Social />
       </div>
     )
   }

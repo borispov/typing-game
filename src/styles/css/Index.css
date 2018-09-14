@@ -328,3 +328,96 @@ h1 {
   .social__item {
     color: #264653;
     font-size: 1.5em; }
+
+@media (min-width: 1024px) and (max-width: 1350px) {
+  .instructions {
+    font-weight: 300;
+    right: 0;
+    max-width: 240px; }
+    .instructions ol {
+      list-style-type: none;
+      padding: 0; }
+      .instructions ol > li:first-letter {
+        font-weight: bold;
+        font-size: 1.05rem; }
+  .rules {
+    right: 0;
+    max-width: 240px; }
+    .rules ol {
+      list-style-type: none;
+      padding: 0; }
+      .rules ol > li:first-letter {
+        font-weight: bold;
+        font-size: 1.05rem; } }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .instructions, .rules {
+    display: none; }
+  .social {
+    position: static;
+    text-align: center;
+    width: 100%;
+    margin: 25px auto 5px; }
+    .social__list {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-left: 50px; }
+  .timer {
+    top: 100%;
+    left: 15%; }
+  .scoreboard {
+    width: 100%;
+    margin-top: 0;
+    padding-top: 0; }
+    .scoreboard__labels {
+      display: flex;
+      background: #F4C161;
+      color: #1c1419; }
+      .scoreboard__labels > p:nth-of-type(2) {
+        padding-right: 20px; }
+    .scoreboard__users > p:nth-of-type(2) {
+      padding-right: 20px; }
+  .gameText__text {
+    width: auto;
+    padding: 2rem; }
+    .gameText__text:before, .gameText__text :after {
+      display: none; } }
+
+@media (min-width: 320px) and (max-width: 767px) {
+  .instructions, .rules {
+    display: none; }
+  .social {
+    position: static;
+    text-align: center;
+    width: 100%;
+    margin: 25px auto 5px; }
+    .social__list {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-left: 50px; }
+  .timer {
+    top: 100%;
+    left: 15%; }
+  .scoreboard {
+    width: 100%;
+    margin-top: 0;
+    padding-top: 0; }
+    .scoreboard__labels {
+      display: flex;
+      background: #F4C161;
+      color: #1c1419; }
+      .scoreboard__labels > p:nth-of-type(2) {
+        padding-right: 20px; }
+    .scoreboard__users > p:nth-of-type(2) {
+      padding-right: 20px; }
+  .gameText__text {
+    width: auto;
+    padding: 2rem; }
+    .gameText__text:before, .gameText__text :after {
+      display: none; } }
+
+@media (min-width: 1024px) and (max-width: 1112px) {
+  .instructions, .rules {
+    max-width: 180px; } }

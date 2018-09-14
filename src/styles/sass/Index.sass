@@ -229,3 +229,116 @@ h1
   &__item
     color: $dark-blue
     font-size: 1.5em
+
+$phone: "(min-width: 320px) and (max-width: 767px)"
+$tablet: "(min-width: 768px) and (max-width: 1023px)"
+$desktop: "(min-width: 1024px)"
+$small-desk: "(min-width: 1024px) and (max-width: 1350px)"
+$verysmall-desk: "(min-width: 1024px) and (max-width: 1112px)"
+
+
+
+@media #{$small-desk}
+  .instructions
+    font-weight: 300
+    right: 0
+    max-width: 240px
+    ol
+      list-style-type: none
+      padding: 0
+      & > li:first-letter
+        font-weight: bold
+        font-size: 1.05rem
+  .rules
+    right: 0
+    // text-align: right
+    max-width: 240px
+    ol
+      list-style-type: none
+      padding: 0
+      & > li:first-letter
+        font-weight: bold
+        font-size: 1.05rem
+
+@media #{$tablet}
+
+  .instructions, .rules
+    display: none
+  .social
+    position: static
+    text-align: center
+    width: 100%
+    margin: 25px auto 5px
+    &__list
+      display: flex
+      justify-content: space-between
+      width: 100%
+      margin-left: 50px
+  .timer
+    top: 100%
+    left: 15%
+  .scoreboard
+    width: 100%
+    margin-top: 0
+    padding-top: 0
+    &__labels
+      display: flex
+      background: $third-color
+      color: #1c1419
+      & > p:nth-of-type(2)
+        padding-right: 20px
+    &__users
+      & > p:nth-of-type(2)
+        padding-right: 20px
+    
+  .gameText
+    // margin: 0 15px
+    &__text
+      width: auto
+      padding: 2rem
+      &:before, :after
+        display: none
+      
+@media #{$phone}
+
+  .instructions, .rules
+    display: none
+  .social
+    position: static
+    text-align: center
+    width: 100%
+    margin: 25px auto 5px
+    &__list
+      display: flex
+      justify-content: space-between
+      width: 100%
+      margin-left: 50px
+  .timer
+    top: 100%
+    left: 15%
+  .scoreboard
+    width: 100%
+    margin-top: 0
+    padding-top: 0
+    &__labels
+      display: flex
+      background: $third-color
+      color: #1c1419
+      & > p:nth-of-type(2)
+        padding-right: 20px
+    &__users
+      & > p:nth-of-type(2)
+        padding-right: 20px
+    
+  .gameText
+    // margin: 0 15px
+    &__text
+      width: auto
+      padding: 2rem
+      &:before, :after
+        display: none
+      
+
+@media #{$verysmall-desk}
+  .instructions, .rules
+    max-width: 180px

@@ -10,7 +10,7 @@ const Score = props => {
         <div className="scoreboard__labels">
           <p> Name </p>
           <p> CPM </p>
-          <p> net WPM </p>
+          <p> WPM </p>
         </div>
         {users.map(usr => {
           return (
